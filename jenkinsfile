@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+    
+    tools {
+        nodejs 'nodejs'
+    }
+
+    stages {
+        stage('Hello') {
+            steps {
+                git branch: 'main', url: 'https://github.com/zaheerrr007/3-Tier-Full-Stack.git'
+            }
+        }
+        stage('install dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+        stage('dpndns test') {
+            steps {
+                sh "test npm"
+            }
+        }
+        
+        stage('image build') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockercred', toolName: 'docker11') {
+                        sh "docker build -t zaheerrr007/camp:latest ."
+    
+                    }
+                }
+            }
+            
+            
+        }
+        
+        stage('image push') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockercred', toolName: 'docker11') {
+                        
+                        sh "docker push zaheerrr007/camp:latest"
+    
+                    }
+                }
+            }
+            
+            
+        }
+        
+        stage('deploy to dev') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockercred', toolName: 'docker11') {
+                        sh "docker run -itd -p 3000:3000 zaheerrr007/camp:latest"
+    
+                    }
+                }
+            }
+            
+            
+        }
+    }
+}
