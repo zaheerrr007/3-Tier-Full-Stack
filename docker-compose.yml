@@ -4,4 +4,4 @@ services:
   nodejs:
     build: .
     ports:
-      - "8080:5000"
+      - "3000:3000"
